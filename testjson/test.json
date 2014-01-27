@@ -1,0 +1,6 @@
+{ "name":"George",
+  "age":58,
+  "indicated":true,
+  "kids":["Gob","Lindsay","Buster",{"name":"Michael","age":39,"kids":["George-Michael"]}],
+  "rival":"Stan Sitwell"
+}

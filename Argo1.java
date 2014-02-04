@@ -6,6 +6,7 @@
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
@@ -112,6 +113,7 @@ public class Argo1 {
 	public int getRow(int targetId)
 	{
 		ByteBuffer readBuf = buffer.asReadOnlyBuffer();
+        int bound = buffer.position();
         // start from the beginning 
 		readBuf.position(0);
 		int oid = 0;
@@ -119,7 +121,7 @@ public class Argo1 {
 		long valnum=0;
 		int len;
         byte []valbool=new byte[1];
-		while(readBuf.hasRemaining()){ 
+		while(readBuf.position()<bound){ 
             // scan the buffer 
 			oid = readBuf.getInt();
 			if(oid > targetId)
@@ -228,23 +230,119 @@ public class Argo1 {
 
 	}
 
+	/**
+	* execute a simple aggregation query with one condition check     
+	* first, just do scan, then do sum up
+	*/
+    public long aggregate(byte[] colName,int threshold){
+		ByteBuffer readBuf = buffer.asReadOnlyBuffer();
+        int bound = buffer.position();
+        // start from the beginning 
+		readBuf.position(0);
+		byte [] key,valstr;
+		long valnum=0;
+		int len;
+        byte []valbool=new byte[1];
+        long sum=0;
+        long rowsum = 0;
+        int preOid = -1; //invalid value, need to be assigned in the first row access  
+		int oid = 1;
+        boolean selectFlag = false; //indicate whether this row is selected or not, based on the condition
+        boolean fieldFlag = false; //indicate whether this field is the conditional check field or not 
+		while(readBuf.position()<bound){ 
+            // scan the buffer 
+			oid = readBuf.getInt();
+            System.out.println("scan oid "+oid);
+			len = readBuf.getInt();
+			key = new byte [len];
+			readBuf.get(key);
+
+            //compare the key -- assume different columns in buffer have no order -- have to check the key 
+            //this is reasonable, become sometime, some columns are missing
+            if(Arrays.equals(key,colName)==true){
+                fieldFlag = true;
+            }else{
+                fieldFlag = false;
+            }
+            
+			len = readBuf.getInt();
+			if(len != UNDEFINED){
+				valstr = new byte [len];
+				readBuf.get(valstr);
+				/* skip other two fields */
+				readBuf.getLong();
+				readBuf.get(valbool);
+			}else{
+				valnum = readBuf.getLong();
+				
+				if(valnum == UNDEFINED){
+					readBuf.get(valbool);	
+					if(valbool[0] != 0 && valbool[0] != 1){
+						System.out.println("wrong bool value!"+valbool);
+						System.exit(0);		
+					}
+				}else{
+                    //LONG value 
+                    //check whether it is where field  
+                    if(fieldFlag==true){
+                        //check selectivity 
+                        if(valnum <= threshold){
+                            selectFlag = true; 
+                            System.out.println("select "+valnum);
+                        } 
+                    }else{
+                        //sum up if it is not where field
+                        rowsum += valnum;
+                        System.out.println("row sum value "+rowsum+" val "+valnum);
+                    }
+
+					/* skip last bool filed */
+					readBuf.get(valbool);
+				}
+			}
+            if(preOid == -1){
+                preOid = oid; //initialize 
+			}else if(oid > preOid){
+				// found the next object - assume monotonous increase 
+                if(selectFlag==true)
+                    sum += rowsum;
+                // reset row stats
+                rowsum = 0;
+                selectFlag = false;
+                preOid = oid;
+            }
+		} // end while 
+
+        // check last row 
+        if(selectFlag==true)
+            sum += rowsum;
+        return sum;
+
+    }
+
 	public static void main(String[] args) throws IOException{
 
-		JsonReader reader = Json.createReader(new FileReader("testjson/test.json")); 
+		//JsonReader reader = Json.createReader(new FileReader("testjson/test.json")); 
+		JsonReader reader = Json.createReader(new FileReader("testjson/abc.json")); 
 		JsonObject jsonob = reader.readObject();
 		System.out.println(jsonob.toString());
 
-		Argo1 parser= new Argo1(100*1000*1000);
+		Argo1 store= new Argo1(100*1000*1000);
 		int objid = 1;
-		parser.insertRow(objid,jsonob,null);
-		parser.insertRow(2,jsonob,null);
-		parser.insertRow(3,jsonob,null);
+		store.insertRow(objid,jsonob,null);
+		store.insertRow(2,jsonob,null);
+		store.insertRow(3,jsonob,null);
 
 		System.out.println("get the result out \n");
 		/* objid,keystr,valstr,valnum,valbool - 5 bytes */
 
 		/* read it out */
-		parser.getRow(2);
+		store.getRow(1);
+
+        // aggregate scan   
+        String targetColumn = "C";
+        long sum = store.aggregate(targetColumn.getBytes(),10);
+        System.out.println("Aggregate sum Results : "+sum);
 
 	}
 }

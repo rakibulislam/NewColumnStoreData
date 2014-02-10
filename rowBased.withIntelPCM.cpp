@@ -121,57 +121,59 @@ int main(int argc, char *argv[]) {
 
 	//Now, let's get CPU counters for the duration of the query
 
-	uint64 L2_RQSTS_DEMAND_DATA_RD_HIT = getNumberOfCustomEvents(0, stateBefore,
-			stateAfter);
-	cout << "\n\nDemand Data Read requests that hit L2 cache.: " << std::dec
-			<< L2_RQSTS_DEMAND_DATA_RD_HIT << endl;
-	uint64 L2_RQSTS_ALL_DEMAND_DATA_RD = getNumberOfCustomEvents(1, stateBefore,
-			stateAfter);
-	cout
-			<< "\n\nCounts any demand and L1 HW prefetch data loadrequests to L2.: "
-			<< std::dec << L2_RQSTS_ALL_DEMAND_DATA_RD << endl;
-	uint64 L1D_REPLACEMENT = getNumberOfCustomEvents(2, stateBefore,
-			stateAfter);
-	cout << "\n\nCounts the number of lines brought into the L1 datacache.: "
-			<< std::dec << L1D_REPLACEMENT << endl;
-	uint64 L1D_EVICTION = getNumberOfCustomEvents(3, stateBefore, stateAfter);
-	cout
-			<< "\n\nCounts the number of modified lines evicted fromthe L1 data cache due to replacement.: "
-			<< std::dec << L1D_EVICTION << endl;
-	uint64 L1D_ALL_M_REPLACEMENT = getNumberOfCustomEvents(4, stateBefore,
-			stateAfter);
-	cout
-			<< "\n\nCache lines in M state evicted out of L1D due toSnoop HitM or dirty line replacement.: "
-			<< std::dec << L1D_ALL_M_REPLACEMENT << endl;
-	uint64 L2_TRANS_DEMAND_DATA_RD = getNumberOfCustomEvents(5, stateBefore,
-			stateAfter);
-	cout << "\n\nDemand Data Read requests that access L2 cache: " << std::dec
-			<< L2_TRANS_DEMAND_DATA_RD << endl;
-	uint64 L2_LINES_OUT_DEMAND_CLEAN = getNumberOfCustomEvents(6, stateBefore,
-			stateAfter);
-	cout << "\n\nClean L2 cache lines evicted by demand.: " << std::dec
-			<< L2_LINES_OUT_DEMAND_CLEAN << endl;
-	uint64 L2_LINES_OUT_PF_CLEAN = getNumberOfCustomEvents(7, stateBefore,
-			stateAfter);
-	cout << "\n\nClean L2 cache lines evicted by L2 prefetch.: " << std::dec
-			<< L2_LINES_OUT_PF_CLEAN << endl;
-	uint64 DTLB_LOAD_MISSES_MISS_CAUSES_A_WALK = getNumberOfCustomEvents(8,
-			stateBefore, stateAfter);
-	cout << "\n\nMisses in all TLB levels that cause a page walk of: "
-			<< std::dec << DTLB_LOAD_MISSES_MISS_CAUSES_A_WALK << endl;
-	uint64 DTLB_LOAD_MISSES_WALK_COMPLETED = getNumberOfCustomEvents(9,
-			stateBefore, stateAfter);
-	cout
-			<< "\n\nMisses in all TLB levels that caused page walk completed of any size.: "
-			<< std::dec << DTLB_LOAD_MISSES_WALK_COMPLETED << endl;
-	uint64 DTLB_LOAD_MISSES_WALK_DURATION = getNumberOfCustomEvents(10,
-			stateBefore, stateAfter);
-	cout << "\n\nCycle PMH is busy with a walk.: " << std::dec
-			<< DTLB_LOAD_MISSES_WALK_DURATION << endl;
-	uint64 DTLB_LOAD_MISSES_STLB_HIT = getNumberOfCustomEvents(11, stateBefore,
-			stateAfter);
-	cout << "\n\nNumber of cache load STLB hits. No page walk.: " << std::dec
-			<< DTLB_LOAD_MISSES_STLB_HIT << endl;
+	uint64 L2_RQSTS_DEMAND_DATA_RD_HIT = getNumberOfCustomEvents(0, stateBefore,stateAfter);
+	cout << "\n\nDemand Data Read requests that hit L2 cache.: " << std::dec<< L2_RQSTS_DEMAND_DATA_RD_HIT << endl;
+	uint64 L2_RQSTS_ALL_DEMAND_DATA_RD = getNumberOfCustomEvents(1, stateBefore,stateAfter);
+	cout << "\n\nCounts any demand and L1 HW prefetch data loadrequests to L2.: " << std::dec<< L2_RQSTS_ALL_DEMAND_DATA_RD << endl;
+	uint64 L1D_REPLACEMENT = getNumberOfCustomEvents(2, stateBefore,stateAfter);
+	cout << "\n\nCounts the number of lines brought into the L1 datacache.: " << std::dec<< L1D_REPLACEMENT << endl;
+	uint64 L1D_EVICTION = getNumberOfCustomEvents(3, stateBefore,stateAfter);
+	cout << "\n\nCounts the number of modified lines evicted fromthe L1 data cache due to replacement.: " << std::dec<< L1D_EVICTION << endl;
+	uint64 L1D_ALL_M_REPLACEMENT = getNumberOfCustomEvents(4, stateBefore,stateAfter);
+	cout << "\n\nCache lines in M state evicted out of L1D due toSnoop HitM or dirty line replacement.: " << std::dec<< L1D_ALL_M_REPLACEMENT << endl;
+	uint64 L2_TRANS_DEMAND_DATA_RD = getNumberOfCustomEvents(5, stateBefore,stateAfter);
+	cout << "\n\nDemand Data Read requests that access L2 cache: " << std::dec<< L2_TRANS_DEMAND_DATA_RD << endl;
+	uint64 L2_LINES_OUT_DEMAND_CLEAN = getNumberOfCustomEvents(6, stateBefore,stateAfter);
+	cout << "\n\nClean L2 cache lines evicted by demand.: " << std::dec<< L2_LINES_OUT_DEMAND_CLEAN << endl;
+	uint64 L2_LINES_OUT_PF_CLEAN = getNumberOfCustomEvents(7, stateBefore,stateAfter);
+	cout << "\n\nClean L2 cache lines evicted by L2 prefetch.: " << std::dec<< L2_LINES_OUT_PF_CLEAN << endl;
+	uint64 DTLB_LOAD_MISSES_MISS_CAUSES_A_WALK = getNumberOfCustomEvents(8, stateBefore,stateAfter);
+	cout << "\n\nMisses in all TLB levels that cause a page walk of: " << std::dec<< DTLB_LOAD_MISSES_MISS_CAUSES_A_WALK << endl;
+	uint64 DTLB_LOAD_MISSES_WALK_COMPLETED = getNumberOfCustomEvents(9, stateBefore,stateAfter);
+	cout << "\n\nMisses in all TLB levels that caused page walk completed of any size.: " << std::dec<< DTLB_LOAD_MISSES_WALK_COMPLETED << endl;
+	uint64 DTLB_LOAD_MISSES_WALK_DURATION = getNumberOfCustomEvents(10, stateBefore,stateAfter);
+	cout << "\n\nCycle PMH is busy with a walk.: " << std::dec<< DTLB_LOAD_MISSES_WALK_DURATION << endl;
+	uint64 DTLB_LOAD_MISSES_STLB_HIT = getNumberOfCustomEvents(11, stateBefore,stateAfter);
+	cout << "\n\nNumber of cache load STLB hits. No page walk.: " << std::dec<< DTLB_LOAD_MISSES_STLB_HIT << endl;
+	uint64 MISALIGN_MEM_REF_LOADS = getNumberOfCustomEvents(12, stateBefore,stateAfter);
+	cout << "\n\nSpeculative cache-line split load uops dispatched to L1D.: " << std::dec<< MISALIGN_MEM_REF_LOADS << endl;
+	uint64 L2_RQSTS_CODE_RD_HIT = getNumberOfCustomEvents(13, stateBefore,stateAfter);
+	cout << "\n\nNumber of instruction fetches that hit the L2 cache.: " << std::dec<< L2_RQSTS_CODE_RD_HIT << endl;
+	uint64 L2_RQSTS_CODE_RD_MISS = getNumberOfCustomEvents(14, stateBefore,stateAfter);
+	cout << "\n\nNumber of instruction fetches that missed the L2 cache.: " << std::dec<< L2_RQSTS_CODE_RD_MISS << endl;
+	uint64 L2_RQSTS_ALL_CODE_RD = getNumberOfCustomEvents(15, stateBefore,stateAfter);
+	cout << "\n\nCounts all L2 code requests.: " << std::dec<< L2_RQSTS_ALL_CODE_RD << endl;
+	uint64 L2_RQSTS_PF_HIT = getNumberOfCustomEvents(16, stateBefore,stateAfter);
+	cout << "\n\nRequests from L2 Hardware prefetcher that hit L2.: " << std::dec<< L2_RQSTS_PF_HIT << endl;
+	uint64 L2_RQSTS_PF_MISS = getNumberOfCustomEvents(17, stateBefore,stateAfter);
+	cout << "\n\nRequests from L2 Hardware prefetcher that missed L2.: " << std::dec<< L2_RQSTS_PF_MISS << endl;
+	uint64 L2_RQSTS_ALL_PF = getNumberOfCustomEvents(18, stateBefore,stateAfter);
+	cout << "\n\nAny requests from L2 Hardware prefetchers.: " << std::dec<< L2_RQSTS_ALL_PF << endl;
+	uint64 LONGEST_LAT_CACHE_REFERENCE = getNumberOfCustomEvents(19, stateBefore,stateAfter);
+	cout << "\n\nThis event counts requests originating from the core that reference a cache line in the last level cache.: " << std::dec<< LONGEST_LAT_CACHE_REFERENCE << endl;
+	uint64 LONGEST_LAT_CACHE_MISS = getNumberOfCustomEvents(20, stateBefore,stateAfter);
+	cout << "\n\nThis event counts each cache miss condition for references to the last level cache: " << std::dec<< LONGEST_LAT_CACHE_MISS << endl;
+	uint64 DTLB_STORE_MISSES_MISS_CAUSES_A_WALK = getNumberOfCustomEvents(21, stateBefore,stateAfter);
+	cout << "\n\nMiss in all TLB levels causes a page walk of any page size (4K/2M/4M/1G).: " << std::dec<< DTLB_STORE_MISSES_MISS_CAUSES_A_WALK << endl;
+	uint64 DTLB_STORE_MISSES_WALK_COMPLETED = getNumberOfCustomEvents(22, stateBefore,stateAfter);
+	cout << "\n\nMiss in all TLB levels causes a page walk that completes of any page size (4K/2M/4M/1G).: " << std::dec<< DTLB_STORE_MISSES_WALK_COMPLETED << endl;
+	uint64 DTLB_STORE_MISSES_WALK_DURATION = getNumberOfCustomEvents(23, stateBefore,stateAfter);
+	cout << "\n\nCycles PMH is busy with this walk.: " << std::dec<< DTLB_STORE_MISSES_WALK_DURATION << endl;
+	uint64 DTLB_STORE_MISSES_STLB_HIT = getNumberOfCustomEvents(24, stateBefore,stateAfter);
+	cout << "\n\nStore operations that miss the first TLB level but hit the second and do not cause page walks.: " << std::dec<< DTLB_STORE_MISSES_STLB_HIT << endl;
+
+
+
 
 	cout << "getL2CacheHitRatio: "
 			<< getL2CacheHitRatio(stateBefore, stateAfter) << endl;
@@ -190,13 +192,21 @@ int main(int argc, char *argv[]) {
     			<< SELECT_SUM_AB_b_WHERE_AB_a <<"\t"
     			<<	numRows <<"\t"
     			<< numCols <<"\t"
+    			<< A_col_id <<"\t"
     			<< selectivity<< "\t"
 		        << (AfterTime - BeforeTime)<<"\t"
-    			<< sum << "\t"
+    			<< sum  <<"\t"
+    			<< getL2CacheHits(stateBefore, stateAfter) << "\t"
+    			<< getL2CacheMisses(stateBefore, stateAfter) << "\t"
+    			<< getCyclesLostDueL2CacheMisses(stateBefore, stateAfter) << "\t"
     			<< getL2CacheHitRatio(stateBefore, stateAfter)<<"\t"
+    			<< getL3CacheHits(stateBefore, stateAfter) << "\t"
     			<< getL3CacheMisses(stateBefore, stateAfter) << "\t"
-    			<< std::dec<< L1D_REPLACEMENT <<"\t"
-    			<< L1D_EVICTION << "\t"
+    			<< getL3CacheHitRatio(stateBefore, stateAfter) << "\t"
+    			<< getCyclesLostDueL3CacheMisses(stateBefore, stateAfter) << "\t"
+    			<< getL3CacheHitsNoSnoop(stateBefore, stateAfter) << "\t"
+    			<< getL3CacheHitsSnoop(stateBefore, stateAfter) << "\t"
+    			<< std::dec
     			<< L2_RQSTS_DEMAND_DATA_RD_HIT<< "\t"
     			<< L2_RQSTS_ALL_DEMAND_DATA_RD<< "\t"
     			<< L1D_REPLACEMENT<< "\t"
@@ -209,6 +219,21 @@ int main(int argc, char *argv[]) {
     			<< DTLB_LOAD_MISSES_WALK_COMPLETED<< "\t"
     			<< DTLB_LOAD_MISSES_WALK_DURATION<< "\t"
     			<< DTLB_LOAD_MISSES_STLB_HIT<< "\t"
+    			<< MISALIGN_MEM_REF_LOADS<< "\t"
+    			<< L2_RQSTS_CODE_RD_HIT<< "\t"
+    			<< L2_RQSTS_CODE_RD_MISS<< "\t"
+    			<< L2_RQSTS_ALL_CODE_RD<< "\t"
+    			<< L2_RQSTS_PF_HIT<< "\t"
+    			<< L2_RQSTS_PF_MISS<< "\t"
+    			<< L2_RQSTS_ALL_PF<< "\t"
+    			<< LONGEST_LAT_CACHE_REFERENCE<< "\t"
+    			<< LONGEST_LAT_CACHE_MISS<< "\t"
+    			<< DTLB_STORE_MISSES_MISS_CAUSES_A_WALK<< "\t"
+    			<< DTLB_STORE_MISSES_WALK_COMPLETED<< "\t"
+    			<< DTLB_STORE_MISSES_WALK_DURATION<< "\t"
+    			<< DTLB_STORE_MISSES_STLB_HIT<< "\t"
+
+
 			<<endl;
     outputFile.close();
 

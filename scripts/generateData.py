@@ -1,4 +1,3 @@
-
 #
 # Generate the test data set
 # generate N rows, K columns  
@@ -9,7 +8,7 @@ import json
 import sys
 
 if(len(sys.argv)<4):
-    print "Usage:",sys.argv[0]," <numObjects> <numColumns> <filename_prefix> "
+    print "Usage:",sys.argv[0]," <numObjects> <numColumns> <filename> "
     sys.exit(1)
     
 print sys.argv
@@ -23,7 +22,7 @@ print "Generate file with ",numObjects, "rows",numFields, " columns", "output fi
 for i in range(0,numObjects):
     # empty the data set 
     data = {};
-    for j in range(0,numFields):
+    for j in range(1,numFields+1):
         data[j]=value
     f.write(json.dumps(data))
     f.write("\n")

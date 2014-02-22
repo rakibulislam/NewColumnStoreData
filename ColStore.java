@@ -25,9 +25,9 @@ import java.util.Hashtable;
 
 public class ColStore {
 
-	private int max_buf_size;
+    private int max_buf_size;
 
-	private int  UNDEFINED= -1111111; //represent NULL  
+    private int  UNDEFINED= -1111111; //represent NULL  
     private byte [] UndefByte= new byte[1];
 
     /* key+type as the key for the hash table */
@@ -37,14 +37,14 @@ public class ColStore {
     String separator=":";
 
 
-	/**
-         * Creates a ring buffer, and using Column format to store the data
-	 * initialize the buffer size 
-	 */
-	public ColStore (int memory_size_in_bytes)
-	{
-		/* later -- pass it from paramters */
-		max_buf_size = memory_size_in_bytes; /* allocated first */
+    /**
+     * Creates a ring buffer, and using Column format to store the data
+     * initialize the buffer size 
+     */
+    public ColStore (int memory_size_in_bytes)
+    {
+        /* later -- pass it from paramters */
+        max_buf_size = memory_size_in_bytes; /* allocated first */
 
         /* create colum Buffer hash table */ 
         colBufs = new Hashtable<String, ByteBuffer>();  
@@ -52,23 +52,23 @@ public class ColStore {
         //
         UndefByte[0] = -1;
 
-	}
+    }
 
-	/**
-	 * not Fixed row format [objid,keystr,valstr,valnum,valbool] 
+    /**
+     * not Fixed row format [objid,keystr,valstr,valnum,valbool] 
      * objid - int, 4Bytes
      * keystr = int + chars, 4Bytes + length
      * valstr = int + chars, 4 Bytes + length
      * valnum -- using long or double (64bits, 8 bytes) - later distinguish them 
      *           8 Bytes  
-	 * valbool = 1 byte 
-	 */
+     * valbool = 1 byte 
+     */
 
-	private int saveStrValue(int objid, String key, String value)
-	{
+    private int saveStrValue(int objid, String key, String value)
+    {
         /* check whether we have buffer or not */
 
-		//later -- use dictionary to compress
+        //later -- use dictionary to compress
         // save to str
         String bufkey = key+separator+"STRING";
         //System.out.println(bufkey);
@@ -83,17 +83,17 @@ public class ColStore {
         
         if(buf != null){
             // insert  
-		    buf.putInt(objid);
-		    buf.putInt(value.length());
-		    buf.put(value.getBytes());
+            buf.putInt(objid);
+            buf.putInt(value.length());
+            buf.put(value.getBytes());
         }
         
-		return 1;
-		
-	}
+        return 1;
+        
+    }
 
-	private int saveLongValue(int objid, String key, long num)
-	{
+    private int saveLongValue(int objid, String key, long num)
+    {
         String bufkey = key+separator+"LONG";
         ByteBuffer buf=colBufs.get(bufkey);
         if(buf == null){
@@ -106,11 +106,11 @@ public class ColStore {
             buf.putInt(objid);
             buf.putLong(num);
         }
-		return 1;
-	} 
+        return 1;
+    } 
 
-	private int saveDoubleValue(int objid, String key, double num)
-	{
+    private int saveDoubleValue(int objid, String key, double num)
+    {
         String bufkey = key+separator+"DOUBLE";
         ByteBuffer buf=colBufs.get(bufkey);
         if(buf == null){
@@ -123,11 +123,11 @@ public class ColStore {
             buf.putInt(objid);
             buf.putDouble(num);
         }
-		return 1;
-	} 
+        return 1;
+    } 
 
-	private int saveBoolValue(int objid, String key, String value)
-	{
+    private int saveBoolValue(int objid, String key, String value)
+    {
         String bufkey = key+separator+"BOOL";
         ByteBuffer buf = colBufs.get(bufkey);
         if(buf == null){
@@ -137,23 +137,23 @@ public class ColStore {
         }
         if(buf !=null ){
             buf.putInt(objid);
-		    if(value.equals("TRUE")==true){
-			    buf.put((byte)1);
-		    }else if(value.equals("FALSE")==true){
-			    buf.put((byte)0);
-		    }else{
-			    System.out.println("Error: unknow value "+value);
-		    }
+            if(value.equals("TRUE")==true){
+                buf.put((byte)1);
+            }else if(value.equals("FALSE")==true){
+                buf.put((byte)0);
+            }else{
+                System.out.println("Error: unknow value "+value);
+            }
         }
-		return 1;
-	}
+        return 1;
+    }
 
-	/**
-	 * Fixed row format [objid,keystr,valstr,valnum,valbool] 
-	 */
+    /**
+     * Fixed row format [objid,keystr,valstr,valnum,valbool] 
+     */
 
-	public int getObject(int targetId)
-	{
+    public int getObject(int targetId)
+    {
         /* tranverse each buffer to read it */
         //get the buffer
         System.out.println("Iterating on the buffer hashtable"+colBufs.keySet());
@@ -183,7 +183,7 @@ public class ColStore {
         }
 
         return 0;
-	}
+    }
 
     public void getObjectFromBoolBuf(ByteBuffer buf, int targetId)
     {
@@ -234,7 +234,7 @@ public class ColStore {
         }
     }
 
-    public void getObjectFromLongBuf(ByteBuffer buf, int targetId)
+    public long getObjectFromLongBuf(ByteBuffer buf, int targetId)
     {
         int bound = buf.position();
         ByteBuffer readBuf = buf.asReadOnlyBuffer();
@@ -254,8 +254,10 @@ public class ColStore {
             // read Long  
             long value = readBuf.getLong();
             if(oid == targetId)
-                System.out.println(" " + value);
+                return value;
+                //System.out.println(" " + value);
         }
+        return UNDEFINED;
 
     }
 
@@ -298,81 +300,172 @@ public class ColStore {
     *
     */
 
-	/**
-	* Navigate the json object and parse it and save it into storage 
-	*
-	*/
+    /**
+    * Navigate the json object and parse it and save it into storage 
+    *
+    */
 
-	public void insertObject(int objid, JsonValue tree, String key){
+    public void insertObject(int objid, JsonValue tree, String key){
 
-		switch(tree.getValueType()){
-			case OBJECT:
-				//System.out.println("  OBJECT");
-				JsonObject object = (JsonObject) tree;
-				for(String name: object.keySet()){
-					if(key!=null)
-						insertObject(objid,object.get(name),key+"."+name);
-					else
-						insertObject(objid,object.get(name),name);
-				}
+        switch(tree.getValueType()){
+            case OBJECT:
+                //System.out.println("  OBJECT");
+                JsonObject object = (JsonObject) tree;
+                for(String name: object.keySet()){
+                    if(key!=null)
+                        insertObject(objid,object.get(name),key+"."+name);
+                    else
+                        insertObject(objid,object.get(name),name);
+                }
                 //if((objid % 10000) == 1) 
                 //   System.out.println("Row id " + objid+ "buffer offset "+buffer.position());
-				break;
-			case ARRAY:
-				//System.out.println("  ARRAY");
-				JsonArray array = (JsonArray) tree;
-				int index =0; 
-				for (JsonValue val : array){
-					insertObject(objid,val,key+"["+index+"]");
-					index += 1;
-				}
-				break;
-			case STRING:
-				JsonString st = (JsonString) tree;
-				saveStrValue(objid,key,st.getString());
-				//System.out.println(objid+" "+key+" "+st.getString());
-				break;
-			case NUMBER:
-				JsonNumber num = (JsonNumber) tree;
+                break;
+            case ARRAY:
+                //System.out.println("  ARRAY");
+                JsonArray array = (JsonArray) tree;
+                int index =0; 
+                for (JsonValue val : array){
+                    insertObject(objid,val,key+"["+index+"]");
+                    index += 1;
+                }
+                break;
+            case STRING:
+                JsonString st = (JsonString) tree;
+                saveStrValue(objid,key,st.getString());
+                //System.out.println(objid+" "+key+" "+st.getString());
+                break;
+            case NUMBER:
+                JsonNumber num = (JsonNumber) tree;
                 if(num.isIntegral()){
-				    saveLongValue(objid,key,num.longValue());
+                    saveLongValue(objid,key,num.longValue());
                 }else{
                     saveDoubleValue(objid,key,num.doubleValue());
                 }
-				//System.out.println(objid+" "+key+" "+num.toString());
-				break;
-			case TRUE:
-			case FALSE:
-				saveBoolValue(objid,key,tree.getValueType().toString());
-				//System.out.println(objid+" "+key+" "+tree.getValueType().toString());
-				break;
-			case NULL:
+                //System.out.println(objid+" "+key+" "+num.toString());
+                break;
+            case TRUE:
+            case FALSE:
+                saveBoolValue(objid,key,tree.getValueType().toString());
+                //System.out.println(objid+" "+key+" "+tree.getValueType().toString());
+                break;
+            case NULL:
                 // we didn't save null value
-				//System.out.println("null\n:");
-				//System.out.println(objid+"key "+key+tree.getValueType().toString());
-				break;
-		}
+                //System.out.println("null\n:");
+                //System.out.println(objid+"key "+key+tree.getValueType().toString());
+                break;
+        }
 
 
-	}
+    }
 
-	public static void main(String[] args) throws IOException{
+    /**
+    * execute a simple aggeration query with one condition check
+    * first, just do scan, then do sum up
+    * get the buffer for where column, and if selected, and get data from other buffers  
+    * for now, only aggregate LONG type
+    */
+    public long aggregate(byte[] colName, int threshold){
+        long sum = 0;
+
+        // for now, the where filed is LONG 
+        String whereKey = new String(colName) + separator + "LONG";
+        ByteBuffer whereBuf = colBufs.get(whereKey);
+        System.out.println("search column key"+whereKey); 
+
+        ByteBuffer [] selectBufs = new ByteBuffer [colBufs.size()-1];
+        int [] bounds = new int [colBufs.size() - 1];
+
+        if(whereBuf == null){
+            System.out.println("Didn't find buffer key"+whereKey); 
+            return -1;
+        }
+        int index = 0; 
+        for(String key: colBufs.keySet()){
+            if( key.equals(whereKey)!=true ) {
+                System.out.println("select buffer"+key);
+                ByteBuffer sbuf = colBufs.get(key);
+                //record current write position 
+                bounds[index]=sbuf.position();
+                //create a read buffer for this column 
+                ByteBuffer rBuf = sbuf.asReadOnlyBuffer(); 
+                rBuf.position(0);
+                selectBufs[index] = rBuf; 
+                index += 1;
+            }else{
+                System.out.println("where buffer"+key);
+            }
+        }
+        
+        ByteBuffer readBuf = whereBuf.asReadOnlyBuffer();
+        int bound = whereBuf.position();
+        readBuf.position(0); 
+        //have a loop to scan each record in readBuf field
+        // check selectivity first
+        int oid = 0;
+        while(readBuf.position()<bound){
+            oid = readBuf.getInt();
+            long value = readBuf.getLong();
+            if(value <= threshold){
+                //get other columns and sum up
+                for(int i = 0; i< index ; i++){
+                    //similar as getObjectFromLongBuf
+                    ByteBuffer rBuf = selectBufs[i];
+                    int wBound = bounds[i];
+                    int cOid = 0;
+                    while(rBuf.position() < bound){
+                        //read current object id
+                        cOid = rBuf.getInt();
+                        if(cOid > oid){
+                            //position back 
+                            int newPosition = rBuf.position()-Integer.SIZE/Byte.SIZE; 
+                            rBuf.position(newPosition);
+                            break;  
+                        }
+                        if(cOid == oid){
+                            System.out.print("Row "+cOid);
+                        }
+                        //read Long
+                        if(cOid == oid){
+                            long sValue = rBuf.getLong();
+                            sum = sum + sValue;
+                        }else{ 
+                            //skip long
+                            int newPosition = rBuf.position()+Long.SIZE/Byte.SIZE; 
+                            rBuf.position(newPosition);
+                        }
+                    } // while rBuf
+                } //for index
+            }//threshold
+        }
+        
+        return sum;
+        
+    } 
+
+    public static void main(String[] args) throws IOException{
 
 
-		/* flatten the json file */ 
-		JsonReader reader = Json.createReader(new FileReader("testjson/test.json")); 
-		JsonObject jsonob = reader.readObject();
-		System.out.println(jsonob.toString());
-		ColStore parser= new ColStore(10*1000*1000);
-		int objid = 1;
-		parser.insertObject(objid,jsonob,null);
-		parser.insertObject(2,jsonob,null);
-		/* populate the table */
+        /* flatten the json file */ 
+        //JsonReader reader = Json.createReader(new FileReader("testjson/test.json")); 
+        JsonReader reader = Json.createReader(new FileReader("testjson/abc.json")); 
+        JsonObject jsonob = reader.readObject();
+        System.out.println(jsonob.toString());
+        ColStore store= new ColStore(10*1000*1000);
+        int objid = 1;
+        store.insertObject(objid,jsonob,null);
+        store.insertObject(2,jsonob,null);
+        store.insertObject(3,jsonob,null);
+        /* populate the table */
 
-		System.out.println("get the result out \n");
-		/* objid, keystr,valstr,valnum,valbool - 5 bytes */
-		/* read it out */
-		parser.getObject(2);
+        System.out.println("get the result out \n");
+        /* objid, keystr,valstr,valnum,valbool - 5 bytes */
+        /* read it out */
+        store.getObject(2);
 
-	}
+        //aggregate scan
+        String targetColumn = "CC";
+        long sum = store.aggregate(targetColumn.getBytes(),10);
+        System.out.println("Aggregate sum results :"+sum);
+
+    }
 }

@@ -173,8 +173,8 @@ public class Argo1 {
 	*/
 
 	public void insertRow(int objid, JsonValue tree, String key){
-        //leave 100K as the warning threshold - don't insert after it 
-        if(buffer.position() > buffer.capacity() - 100000){
+        //leave 1K as the warning threshold - don't insert after it 
+        if(buffer.position() > buffer.capacity() - 1000){
             //don't insert any more -- buffer almost full
             System.out.println("buffer is almost full. No inserts any more!");
             return;
@@ -189,8 +189,9 @@ public class Argo1 {
 					else
 						insertRow(objid,object.get(name),name);
 				}
-                if((objid % 10000) == 1) 
-                    System.out.println("Row id " + objid+ "buffer offset "+buffer.position());
+                // check the size
+                //if((objid % 10000) == 1) 
+                //   System.out.println("Row id " + objid+ "buffer offset "+buffer.position());
 				break;
 			case ARRAY:
 				//System.out.println("  ARRAY");
@@ -252,7 +253,23 @@ public class Argo1 {
 		while(readBuf.position()<bound){ 
             // scan the buffer 
 			oid = readBuf.getInt();
-            System.out.println("scan oid "+oid);
+            //System.out.println("scan oid "+oid);
+
+            if(preOid == -1){
+                preOid = oid; //initialize 
+			}else if(oid > preOid){
+				// found the next object - assume monotonous increase 
+                if(selectFlag==true){
+                    sum += rowsum;
+                    //System.out.println("row sum value "+rowsum+" sum "+sum);
+                }
+                //System.out.println("reset rowsum,selectFlag");
+                // reset row stats and selectFlag -- must happen before we check the key
+                rowsum = 0;
+                selectFlag = false;
+                preOid = oid;
+            }
+
 			len = readBuf.getInt();
 			key = new byte [len];
 			readBuf.get(key);
@@ -288,34 +305,24 @@ public class Argo1 {
                         //check selectivity 
                         if(valnum <= threshold){
                             selectFlag = true; 
-                            System.out.println("select "+valnum);
                         } 
                     }else{
                         //sum up if it is not where field
                         rowsum += valnum;
-                        System.out.println("row sum value "+rowsum+" val "+valnum);
+                        //System.out.println("row sum value "+rowsum+" val "+valnum+" sum "+sum);
                     }
 
 					/* skip last bool filed */
 					readBuf.get(valbool);
 				}
 			}
-            if(preOid == -1){
-                preOid = oid; //initialize 
-			}else if(oid > preOid){
-				// found the next object - assume monotonous increase 
-                if(selectFlag==true)
-                    sum += rowsum;
-                // reset row stats
-                rowsum = 0;
-                selectFlag = false;
-                preOid = oid;
-            }
 		} // end while 
 
+        //System.out.println("End loop: row sum value "+rowsum+" val "+valnum+" sum "+sum+" selectFlag "+selectFlag);
         // check last row 
-        if(selectFlag==true)
+        if(selectFlag==true){
             sum += rowsum;
+        }
         return sum;
 
     }
@@ -340,7 +347,7 @@ public class Argo1 {
 		store.getRow(1);
 
         // aggregate scan   
-        String targetColumn = "C";
+        String targetColumn = "B";
         long sum = store.aggregate(targetColumn.getBytes(),10);
         System.out.println("Aggregate sum Results : "+sum);
 

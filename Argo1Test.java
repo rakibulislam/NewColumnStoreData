@@ -1,6 +1,7 @@
 /*
- * DataPopulator.java
- * populate data from a file, each line is a json object
+ * Argo1Test.java
+ * derived from DataPopulator.java
+ * json data is from a file, each line is a json object
  * @author Jin Chen
  */
 
@@ -20,19 +21,20 @@ import javax.json.JsonArray;
 import javax.json.JsonNumber;
 import javax.json.JsonString;
 import java.nio.ByteBuffer;
+import java.util.Calendar;
 
 
-public class DataPopulator {
+public class Argo1Test {
     public static void main(String[] args){
 
         String inputFileName; 
-        int buffer_size = 2*1000*1000;
-        System.out.println("Buffer size (inGB) "+buffer_size/1000/1000/1000); 
+        int buffer_size = 2*1024*1024*1024-4;
+        //System.out.println("Buffer size (inGB) "+buffer_size/1000/1000/1000); 
         Argo1 argo1Store = new Argo1(buffer_size);
         //ColStore dataStore = new ColStore(buffer_size); 
 
-        if (args.length != 1){
-            System.out.println("Arguments: "+ "<input file name>" );
+        if (args.length != 2){
+            System.out.println("Arguments: "+ "<input file name> <test column name>" );
             System.exit(0);
         }
 
@@ -50,17 +52,20 @@ public class DataPopulator {
                 argo1Store.insertRow(objid,jsonob,null);
                 //dataStore.insertObject(objid,jsonob,null);
                 line = bufferedReader.readLine();
-                if(objid > 300)
-                    break; //avoid overflow - for testing purpose
-                
             }
 
             /* output the row - for test*/
             //dataStore.getObject(3);
-            String column = "40";
-            long sum=argo1Store.aggregate(column.getBytes(),10); 
-            System.out.println("sum is "+sum);
-
+            //use last column as the where column
+            String column = args[1];
+            int numTests = 1;
+            for(int i=0; i<numTests; i++){
+                long start = System.currentTimeMillis();
+                long sum=argo1Store.aggregate(column.getBytes(),10); 
+                //System.out.println("sum is "+sum);
+                long end = System.currentTimeMillis();
+                System.out.println(end-start);
+            }
         } catch (FileNotFoundException e){
             System.err.println("FileNotFoundException:"+e.getMessage());
             return ;

@@ -5,4 +5,4 @@ CLASSPATH=".:./javax.json-1.0.3.jar:../google-gson-2.2.4/gson-2.2.4.jar:./object
 #java -cp .:../google-gson-2.2.4/gson-2.2.4.jar -Xmx30g $@
 #java -cp .:../google-gson-2.2.4/gson-2.2.4.jar  $@
 echo "java -cp ${CLASSPATH}  $@"
-java -cp ${CLASSPATH}  $@
+java -cp ${CLASSPATH}  -Xmx12g $@

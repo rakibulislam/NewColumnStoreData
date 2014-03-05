@@ -98,7 +98,7 @@ public class ColStore {
         ByteBuffer buf=colBufs.get(bufkey);
         if(buf == null){
             //allocate byte buffer
-            System.out.println("allocate buf "+max_buf_size);
+            //System.out.println("allocate buf "+max_buf_size);
             buf = ByteBuffer.allocateDirect(max_buf_size);
             colBufs.put(bufkey,buf);
         }
@@ -370,7 +370,7 @@ public class ColStore {
         // for now, the where filed is LONG 
         String whereKey = new String(colName) + separator + "LONG";
         ByteBuffer whereBuf = colBufs.get(whereKey);
-        System.out.println("search column key"+whereKey); 
+        //System.out.println("search column key"+whereKey); 
 
         ByteBuffer [] selectBufs = new ByteBuffer [colBufs.size()-1];
         int [] bounds = new int [colBufs.size() - 1];
@@ -382,7 +382,7 @@ public class ColStore {
         int index = 0; 
         for(String key: colBufs.keySet()){
             if( key.equals(whereKey)!=true ) {
-                System.out.println("select buffer"+key);
+                //System.out.println("select buffer"+key);
                 ByteBuffer sbuf = colBufs.get(key);
                 //record current write position 
                 bounds[index]=sbuf.position();
@@ -392,7 +392,7 @@ public class ColStore {
                 selectBufs[index] = rBuf; 
                 index += 1;
             }else{
-                System.out.println("where buffer"+key);
+                //System.out.println("where buffer"+key);
             }
         }
         
@@ -421,9 +421,9 @@ public class ColStore {
                             rBuf.position(newPosition);
                             break;  
                         }
-                        if(cOid == oid){
-                            System.out.print("Row "+cOid);
-                        }
+                        //if(cOid == oid){
+                            //System.out.print("Row "+cOid);
+                        //}
                         //read Long
                         if(cOid == oid){
                             long sValue = rBuf.getLong();

@@ -7,6 +7,10 @@ CLASSPATH = .:./javax.json-1.0.3.jar
 JFLAGS = -Xlint -cp ${CLASSPATH}
 JC = javac
 
+ColStoreTest:ColStoreTest.java
+	${JC} ${JFLAGS} ColStoreTest.java
+Argo1Test:Argo1Test.java
+	${JC} ${JFLAGS} Argo1Test.java
 HybridStore:HybridStore.java
 	${JC} ${JFLAGS} HybridStore.java
 ColStore:ColStore.java

@@ -4,8 +4,8 @@ import sys
 
 numColumns = [ 2,4,8,16,24,32,40,48 ]
 #numObjects = [ 100000,200000,500000,1000000,5000000,10000000 ]
-numObjects = [ 10000000 ]
-numRuns = 2
+numObjects = [ 100000,200000,500000,1000000]
+numRuns = 1
 
 classpath="../.:../javax.json-1.0.3.jar"
 
@@ -21,8 +21,7 @@ for i in range(0,numRuns):
             filename = "tests/"+"test-"+str(c)+"C-"+str(r/1000)+"K"+".json"
             #print filename,c 
             #subprocess.Popen(["java","-cp",classpath,prog,filename,testColumn]); 
-            results=subprocess.check_output(["java","-cp",classpath,prog,filename,testColumn]); 
-            print str(r)+" "+str(c)+" "+results
-            sys.exit(0)
+            results=subprocess.check_output(["java","-cp",classpath,"-Xmx10g",prog,filename,testColumn]); 
+            sys.stdout.write(str(r)+" "+str(c)+" "+results)
              
     

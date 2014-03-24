@@ -1,4 +1,4 @@
-/**xx
+/**
  * An row-based buffer store  
  * @author Alan Lu
  */
@@ -15,6 +15,7 @@ import javax.json.JsonNumber;
 import javax.json.JsonString;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
+import java.io.BufferedReader;
 
 public class RowStore {
 	private int max_buf_size;
@@ -29,7 +30,7 @@ public class RowStore {
      * Creates a ring buffer
 	 * initialize the buffer size 
      */
-    public RowStore (int memory_size_in_bytes)
+    public RowStore (int memory_size_in_bytes, String defFile)
     {
 		int max_buf_size = memory_size_in_bytes; 
 
@@ -38,6 +39,19 @@ public class RowStore {
 		//buffer = new byte[max_buf_size];
 
         UndefByte[0] = -1;
+        
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(defFile));
+            String line  = bufferedReader.readLine();
+            fields = line.split("\\s+"); //separted by any white space 
+            bufferedReader.close();
+        } catch (FileNotFoundException e){
+                        System.err.println("FileNotFoundException:"+e.getMessage());
+                        return ;
+        } catch (IOException e){
+                        System.err.println("IOException:"+e.getMessage());
+                        return;
+        }
 	}
     
     public int getRow(int targetId)
@@ -78,8 +92,6 @@ public class RowStore {
 	                return 1;
 	            }
 			}
-
-
 			if(oid == targetId)
 				System.out.println("");
 		} /* end while */
@@ -127,7 +139,6 @@ public class RowStore {
 		case NULL:
 			break;
         }
-
 	}
     
 	public void insertRow(int objid){
@@ -167,16 +178,86 @@ public class RowStore {
             }
 		}
 	}
+	
+    public long aggregate(byte[] colName,int threshold){
+    	ByteBuffer readBuf = buffer.asReadOnlyBuffer();
+        int bound = buffer.position();
+        // start from the beginning 
+		readBuf.position(0);
+        long rowsum = 0;
+        long sum=0;
+		long longnum=0;
+		double doublenum=0;
+		int preOid = -1; //invalid value, need to be assigned in the first row access  
+		int oid = 1;
+        boolean selectFlag = false; //indicate whether this row is selected or not, based on the condition
+        boolean fieldFlag = false; //indicate whether this field is the conditional check field or not 
+
+        while(readBuf.position()<bound){ 
+            // scan the buffer 
+			oid = readBuf.getInt();
+
+			if(preOid == -1){
+                preOid = oid; //initialize 
+			}else if(oid > preOid){
+				// found the next object - assume monotonous increase 
+                if(selectFlag==true){
+                    sum += rowsum;
+                    System.out.println("row sum value "+rowsum+" sum "+sum);
+                }
+                //System.out.println("reset rowsum,selectFlag");
+                // reset row stats and selectFlag -- must happen before we check the key
+                rowsum = 0;
+                selectFlag = false;
+                preOid = oid;
+            }
+
+			for(int i = 0; i < fields.length; i++){
+				String [] parts = fields[i].split(separator);
+				String columnKey = parts[0];
+	            String type = parts[1];
+	            
+	            if(Arrays.equals(columnKey.getBytes(), colName)==true){
+	            	fieldFlag = true;
+	            }else{
+	            	fieldFlag = false;
+	            }
+	            
+	            if(type.equals("STRING")){
+	            }else if(type.equals("LONG")){
+	            	longnum = readBuf.getLong();
+	            	if(fieldFlag==true){
+	                    //check selectivity 
+	                    if(longnum <= threshold){
+	                        selectFlag = true; 
+	                    } 
+	                }else{
+	                    //sum up if it is not where field
+	                    rowsum += longnum;
+	                    System.out.println("row sum value "+rowsum+" val "+longnum+" sum "+sum);
+	                }
+	            }else if(type.equals("DOUBLE")){
+	            	doublenum = readBuf.getDouble();
+	            }else if(type.equals("BOOL")){
+	            }else{
+	                System.out.println("Error: no such type in buf "+type);
+	                return 1;
+	            }
+			}
+		} /* end while */
+        
+        return sum;
+    }
     
 	public static void main(String[] args) throws IOException{
 		JsonReader reader = Json.createReader(new FileReader("testjson/abcde2.json")); 
 
 		//Assuming we know all the columns and data type in advance
-		fields = new String[] {"A:LONG","B:LONG","C:LONG","D:LONG","E:DOUBLE"};
+		//fields = new String[] {"A:LONG","B:LONG","C:LONG","D:LONG","E:DOUBLE"};
 		
 		JsonObject jsonob = reader.readObject();
 		System.out.println(jsonob.toString());
-		RowStore store= new RowStore(100*1000*1000);
+		RowStore store= new RowStore(100*1000*1000, "testjson/abcde2_definition");
 		
 		//insert objects
 		for(int objid=0; objid<10; objid++){
@@ -189,5 +270,9 @@ public class RowStore {
 
 		System.out.println("get the result out \n");
 		store.getRow(5);
+		// aggregate scan   
+        String targetColumn = "B";
+        long sum = store.aggregate(targetColumn.getBytes(),500);
+        System.out.println("Aggregate sum Results : "+sum);
 	}
 }

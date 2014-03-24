@@ -1,4 +1,4 @@
-/**x
+/**xx
  * An row-based buffer store  
  * @author Alan Lu
  */

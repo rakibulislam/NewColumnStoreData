@@ -62,7 +62,7 @@ public class Argo1Test {
             for(int i=0; i<numTests; i++){
                 long start = System.currentTimeMillis();
                 long sum=argo1Store.aggregate(column.getBytes(),10); 
-                //System.out.println("sum is "+sum);
+                System.out.println("sum is "+sum);
                 long end = System.currentTimeMillis();
                 System.out.println(end-start);
             }

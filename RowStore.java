@@ -97,7 +97,14 @@ public class RowStore {
 		} /* end while */
         return 0;
 	}
-    
+   
+	public void insertObject(int objid, JsonValue tree, String key){
+		tempBufLong.clear();
+		tempBufDouble.clear();
+		prepareRow(objid, tree, key);
+		insertRow(objid);
+	}
+ 
     public void prepareRow(int objid, JsonValue tree, String key){
         switch(tree.getValueType()){
 		case OBJECT:
@@ -109,8 +116,8 @@ public class RowStore {
 					prepareRow(objid,object.get(name),name);
 			}
             // check the size
-            if((objid % 10000) == 1) 
-               System.out.println("Row id " + objid+ "buffer offset "+buffer.position());
+            //if((objid % 10000) == 1) 
+           //    System.out.println("Row id " + objid+ "buffer offset "+buffer.position());
 			break;
 		case ARRAY:
 			JsonArray array = (JsonArray) tree;
@@ -197,21 +204,6 @@ public class RowStore {
             // scan the buffer 
 			oid = readBuf.getInt();
 
-			if(preOid == -1){
-                preOid = oid; //initialize 
-			}else if(oid > preOid){
-				// found the next object - assume monotonous increase 
-                if(selectFlag==true){
-                    sum += rowsum;
-                    System.out.println("row sum value "+rowsum+" sum "+sum);
-                }
-                //System.out.println("reset rowsum,selectFlag");
-                // reset row stats and selectFlag -- must happen before we check the key
-                rowsum = 0;
-                selectFlag = false;
-                preOid = oid;
-            }
-
 			for(int i = 0; i < fields.length; i++){
 				String [] parts = fields[i].split(separator);
 				String columnKey = parts[0];
@@ -234,7 +226,7 @@ public class RowStore {
 	                }else{
 	                    //sum up if it is not where field
 	                    rowsum += longnum;
-	                    System.out.println("row sum value "+rowsum+" val "+longnum+" sum "+sum);
+	                   // System.out.println("row sum value "+rowsum+" val "+longnum+" sum "+sum);
 	                }
 	            }else if(type.equals("DOUBLE")){
 	            	doublenum = readBuf.getDouble();
@@ -244,8 +236,16 @@ public class RowStore {
 	                return 1;
 	            }
 			}
+	
+            if(selectFlag==true){
+            	sum += rowsum;
+              //  System.out.println("row sum value "+rowsum+" sum "+sum);
+            }
+                //System.out.println("reset rowsum,selectFlag");
+                // reset row stats and selectFlag -- must happen before we check the key
+            rowsum = 0;
+            selectFlag = false;
 		} /* end while */
-        
         return sum;
     }
     
@@ -261,11 +261,7 @@ public class RowStore {
 		
 		//insert objects
 		for(int objid=0; objid<10; objid++){
-			//Clear the hashtables that temporarily stores data of an object
-			tempBufLong.clear();
-			tempBufDouble.clear();
-			store.prepareRow(objid,jsonob,null);
-			store.insertRow(objid);
+			store.insertObject(objid,jsonob,null);
 		}
 
 		System.out.println("get the result out \n");

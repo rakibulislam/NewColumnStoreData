@@ -9,5 +9,4 @@ for r in numObjects:
     for c in numColumns:
         filename = "test-"+str(c)+"C-"+str(r/1000)+"K"+".json" 
         print filename 
-        subprocess.Popen(["python","generateData.py",str(r),str(c),filename])
-
+	subprocess.Popen(["python","generateData.py",str(r),str(c),filename])

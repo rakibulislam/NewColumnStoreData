@@ -11,6 +11,8 @@ ColStoreTest:ColStoreTest.java
 	${JC} ${JFLAGS} ColStoreTest.java
 Argo1Test:Argo1Test.java
 	${JC} ${JFLAGS} Argo1Test.java
+RowStoreTest:RowStoreTest.java
+	${JC} ${JFLAGS} RowStoreTest.java
 HybridStore:HybridStore.java
 	${JC} ${JFLAGS} HybridStore.java
 ColStore:ColStore.java
@@ -19,6 +21,8 @@ Argo3:Argo3.java
 	${JC} ${JFLAGS} Argo3.java
 Argo1:Argo1.java
 	${JC} ${JFLAGS} Argo1.java
+RowStore:RowStore.java
+	${JC} ${JFLAGS} RowStore.java
 DataPopulator:DataPopulator.java
 	${JC} ${JFLAGS} DataPopulator.java
 RawCollectionsExample: RawCollectionsExample.java

@@ -2,7 +2,8 @@ import subprocess
 import os
 import sys
 
-numColumns = [ 2,4,8,16,24,32,40,48 ]
+numColumns = [ 2 ]
+#numColumns = [ 2,4,8,16,24,32,40,48 ]
 #numObjects = [ 100000,200000,500000,1000000,5000000,10000000 ]
 numObjects = [ 100000,200000,500000,1000000]
 numRuns = 1

@@ -186,6 +186,27 @@ public class RowStore {
 		}
 	}
 	
+    public long fastAggregate(byte[] colName,int threshold){
+        /* assume we all have the same type */
+        ByteBuffer readBuf = buffer.asReadOnlyBuffer();
+        int bound = buffer.position();
+        readBuf.position(0);
+        long rowsum = 0;
+        long longnum = 0;
+        int oid;
+        //assume selectivity is 1 for now
+        //simple sum all of them
+        while(readBuf.position()<bound){
+            oid = readBuf.getInt();
+            for(int i = 0 ; i < fields.length; i++){
+	       	    longnum = readBuf.getLong();
+                rowsum += longnum;
+            }
+        }
+        return rowsum;
+            
+ 
+    }
     public long aggregate(byte[] colName,int threshold){
     	ByteBuffer readBuf = buffer.asReadOnlyBuffer();
         int bound = buffer.position();
@@ -260,15 +281,17 @@ public class RowStore {
 		RowStore store= new RowStore(100*1000*1000, "testjson/abcde2_definition");
 		
 		//insert objects
-		for(int objid=0; objid<10; objid++){
+		for(int objid=1; objid<=10; objid++){
 			store.insertObject(objid,jsonob,null);
 		}
 
 		System.out.println("get the result out \n");
-		store.getRow(5);
+		store.getRow(0);
 		// aggregate scan   
         String targetColumn = "B";
         long sum = store.aggregate(targetColumn.getBytes(),500);
+        System.out.println("Aggregate sum Results : "+sum);
+        sum = store.fastAggregate(targetColumn.getBytes(),500);
         System.out.println("Aggregate sum Results : "+sum);
 	}
 }

@@ -61,7 +61,8 @@ public class RowStoreTest {
             int numTests = 1;
             for(int i=0; i<numTests; i++){
                 long start = System.currentTimeMillis();
-                long sum=rowStore.aggregate(column.getBytes(),10); 
+                //long sum=rowStore.aggregate(column.getBytes(),10); 
+                long sum=rowStore.fastAggregate(column.getBytes(),10); 
                // System.out.println("sum is "+sum);
                 long end = System.currentTimeMillis();
                 System.out.println(end-start);

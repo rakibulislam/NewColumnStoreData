@@ -7,38 +7,19 @@ CLASSPATH = .:./javax.json-1.0.3.jar
 JFLAGS = -Xlint -cp ${CLASSPATH}
 JC = javac
 
-ColStoreTest:ColStoreTest.java
-	${JC} ${JFLAGS} ColStoreTest.java
-Argo1Test:Argo1Test.java
-	${JC} ${JFLAGS} Argo1Test.java
-RowStoreTest:RowStoreTest.java
-	${JC} ${JFLAGS} RowStoreTest.java
-HybridStore:HybridStore.java
-	${JC} ${JFLAGS} HybridStore.java
-ColStore:ColStore.java
-	${JC} ${JFLAGS} ColStore.java
-Argo3:Argo3.java
-	${JC} ${JFLAGS} Argo3.java
-Argo1:Argo1.java
-	${JC} ${JFLAGS} Argo1.java
-RowStore:RowStore.java
-	${JC} ${JFLAGS} RowStore.java
-DataPopulator:DataPopulator.java
-	${JC} ${JFLAGS} DataPopulator.java
-RawCollectionsExample: RawCollectionsExample.java
-	${JC} ${JFLAGS} RawCollectionsExample.java
-DataBuffer: DataBuffer.java 
-	${JC} ${JFLAGS} DataBuffer.java
-TestBuffer: TestBuffer.java 
-	${JC} ${JFLAGS} TestBuffer.java
-SeqBufferEngine: SeqBufferEngine.java	User.java 
-	${JC} ${JFLAGS} SeqBufferEngine.java User.java
-TestTweet: TestTweet.java Tweet.java
-	${JC} ${JFLAGS} TestTweet.java Tweet.java
-ReadJsonUserGson: ReadJsonUseGson.java	User.java 
-	${JC} ${JFLAGS} ReadJsonUseGson.java User.java
-RingBufferEngine: RingBufferEngine.java	User.java 
-	${JC} ${JFLAGS} RingBufferEngine.java User.java
+
+SimpleQueryExecutor:SimpleQueryExecutor.java
+	${JC} ${JFLAGS} SimpleQueryExecutor.java
+NewArgo1StoreEng:NewArgo1StoreEng.java
+	${JC} ${JFLAGS} NewArgo1StoreEng.java
+NewRowStoreEng:NewRowStoreEng.java
+	${JC} ${JFLAGS} NewRowStoreEng.java
+NewColStoreEng:NewColStoreEng.java
+	${JC} ${JFLAGS} NewColStoreEng.java
+NewRowColStoreEng:NewRowColStoreEng.java
+	${JC} ${JFLAGS} NewRowColStoreEng.java
+StoreEngine:StoreEngine.java
+	${JC} ${JFLAGS} StoreEngine.java
 
 clean:
 	rm *.class

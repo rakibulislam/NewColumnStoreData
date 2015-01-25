@@ -1,0 +1,7 @@
+6 
+4 str1 num nested_obj.str nested_obj.num 2 
+4 str1 sparse_075 sparse_119 sparse_796 2 
+2 str1 num 1 
+2 nested_obj.str nested_obj.num 1 
+2 sparse_075 sparse_119 1
+2 sparse_796 sparse_795 1

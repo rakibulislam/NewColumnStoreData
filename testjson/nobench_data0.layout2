@@ -1,0 +1,8 @@
+num:LONG
+nested_obj.str:STRING
+nested_obj.num:LONG
+sparse_075:STRING
+sparse_119:STRING
+sparse_795:STRING
+str1:STRING
+sparse_796:STRING

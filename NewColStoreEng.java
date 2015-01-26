@@ -695,9 +695,26 @@ public class NewColStoreEng extends StoreEngine  {
         cols.get(bufkey).saveStrValue(objid, position);
         
         ////rakib change here to compress before putting
-		System.out.println ("RAKIB COMPRESS HERE....");
-        stringBuffer.putInt(value.length());
-        stringBuffer.put(value.getBytes());
+		try {
+			String compressionOption = "BEST_COMPRESSION";
+		
+			System.out.println ("Original Incoming String Length: "+ value.getBytes().length+ " bytes");
+			System.out.println ("Original Incoming String: "+ value);	
+			CompressedData compressedOutput = Utility.compressString(value, compressionOption);				
+			System.out.println ("Size of Compressed Data: "+ compressedOutput.compressedDataLength+ " bytes");			
+			stringBuffer.putInt(compressedOutput.compressedDataLength);
+			System.out.println ("Compressed Data (bytes): "+compressedOutput.getCompressedData());
+			stringBuffer.put(compressedOutput.getCompressedData());				
+
+			System.out.println("==========================================");
+		
+	        // stringBuffer.putInt(value.length());
+	        // stringBuffer.put(value.getBytes());
+			
+		}
+		catch(IOException ioe){
+			System.out.println("Exception Message:"+ ioe);
+		}
         
         return 1;
     }
